@@ -1,5 +1,5 @@
 const UserRepository = require('./user.repository');
-
+const bcrypt = require('bcrypt');
 const UserService = {
     getAllUsers: async (page, limit) => {
         const offset = (page - 1) * limit;
