@@ -1,6 +1,7 @@
 const AuthRepository = require('./auth.repository');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { route } = require('./auth.route');
 
 const AuthService = {
     registerUser: async (userData) => {
@@ -25,18 +26,24 @@ const AuthService = {
 
         const payload = {
             id: user.id,
-            email: user.email
+            email: user.email,
+            role: user.role
         };
 
         const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, { expiresIn: '15m' });
-        const refreshToken = jwt.sign(payload, process.envJWT_REFRESH_SECRET, { expiresIn: '7d' });
+        const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
         await AuthRepository.saveRefreshToken(user.id, refreshToken);
 
         return {
             accessToken,
             refreshToken,
-            user: { id: user.id, username: user.username, email: user.email }
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                role: user.role
+            }
         };
     },
 
@@ -56,7 +63,7 @@ const AuthService = {
             throw new Error('Token không hợp lệ hoặc đã bị thu hổi');
         }
 
-        const payload = { id: user.id, email: user.email };
+        const payload = { id: user.id, email: user.email, role: user.role };
         const newAccessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
             expiresIn: '15m'
         });
