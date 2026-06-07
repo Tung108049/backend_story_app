@@ -1,16 +1,21 @@
 const db = require('../../config/database');
 
 const AuthRepository = {
-    createUser: async (username, email, password_hash) => {
-        const query = `INSERT INTO users (username, email, password_hash)
-                       VALUES(?, ?, ?)`;
-        const [rows] = await db.query(query, [username, email, password_hash]);
-        return rows;
+    createUser: async (username, email, password_hash, nickname) => {
+        const query = `INSERT INTO users (username, email, password_hash, nickname)
+                       VALUES(?, ?, ?, ?)`;
+        const [result] = await db.query(query, [username, email, password_hash, nickname]);
+        return result;
     },
 
-    getUserByEmail: async (email) => {
-        const query = 'SELECT * FROM users WHERE email = ?';
-        const [rows] = await db.query(query, [email]);
+    checkDuplicate: async (username, email) => {
+        const query = `SELECT * FROM users WHERE username = ? OR email = ?`;
+        const [rows] = await db.query(query, [username, email]);
+    },
+
+    getUserByIdentifier: async (identifier) => {
+        const query = 'SELECT * FROM users WHERE username = ? OR email = ?';
+        const [rows] = await db.query(query, [identifier, identifier]);
         return rows[0];
     },
 

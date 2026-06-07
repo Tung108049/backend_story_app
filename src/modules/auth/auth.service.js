@@ -2,26 +2,34 @@ const AuthRepository = require('./auth.repository');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { route } = require('./auth.route');
+const AppError = require('../../utils/AppError');
 
 const AuthService = {
     registerUser: async (userData) => {
         const { username, email, password } = userData;
-        if (await AuthRepository.getUserByEmail(email)) {
-            throw new Error('Email đã tồn tại!');
+        const existingUser = await AuthRepository.checkDuplicate(username, email);
+        if (existingUser) {
+            if (existingUser.email === email) {
+                throw new AppError('Email đã được sử dụng!', 409);
+            }
+            if (existingUser.username === username) {
+                throw new AppError('Tên người dùng đã được sử dụng!', 409);
+            }
         }
         const passwordHash = await bcrypt.hash(password, 10);
-        return await AuthRepository.createUser(username, email, passwordHash);
+        const nickname = username;
+        return await AuthRepository.createUser(username, email, passwordHash, nickname);
     },
 
-    loginUser: async (email, password) => {
-        const user = await AuthRepository.getUserByEmail(email);
+    loginUser: async (identifier, password) => {
+        const user = await AuthRepository.getUserByIdentifier(identifier);
         if (!user) {
-            throw new Error('Email không tồn tại!');
+            throw new AppError('Email hoặc mật khẩu không chính xác!', 401);
         }
 
         const isMatch = await bcrypt.compare(password, user.password_hash);
         if (!isMatch) {
-            throw new Error('Sai mật khẩu!');
+            throw new AppError('Email hoặc mật khẩu không chính xác!', 401);
         }
 
         const payload = {
@@ -49,18 +57,21 @@ const AuthService = {
 
     refreshAccessToken: async (refreshTokenFromClient) => {
         if (!refreshTokenFromClient) {
-            throw new Error('Không tìm thấy token!');
+            throw new AppError('Không tìm thấy Refresh Token!', 401);
         }
 
         try {
             jwt.verify(refreshTokenFromClient, process.env.JWT_REFRESH_SECRET);
         } catch (error) {
-            throw new Error('Token không hợp lệ!');
+            throw new AppError(
+                'Refresh Token đã hết hạn hoặc không hợp lệ! Vui lòng thử lại!',
+                401
+            );
         }
 
         const user = await AuthRepository.getUserByRefreshToken(refreshTokenFromClient);
         if (!user) {
-            throw new Error('Token không hợp lệ hoặc đã bị thu hổi');
+            throw new AppError('Token không hợp lệ hoặc tài khoản đã bị khoá!', 401);
         }
 
         const payload = { id: user.id, email: user.email, role: user.role };

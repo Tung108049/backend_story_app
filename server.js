@@ -24,6 +24,9 @@ app.get('/api/ping', (req, res) => {
     });
 });
 
+const errorHandler = require('./src/middlewares/error.middleware');
+app.use(errorHandler);
+
 app.listen(port, () => {
     console.log(`Server đã mở: http:localhost:${port}`);
 });

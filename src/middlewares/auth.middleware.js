@@ -1,11 +1,12 @@
 const jwt = require('jsonwebtoken');
+const AppError = require('../utils/AppError');
 
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
-        return res.status(401).json({ message: 'Không tìm thấy accessToken' });
+        return next(new AppError('Lỗi 401: Không tìm thấy thẻ!', 401));
     }
 
     try {
@@ -13,7 +14,7 @@ const verifyToken = (req, res, next) => {
         req.user = decoded;
         next();
     } catch (error) {
-        return res.status(403).json({ message: 'Thẻ không hợp lệ!' });
+        return next(new AppError('Lỗi 401: Thẻ hết hạn hoặc không hợp lệ!', 401));
     }
 };
 

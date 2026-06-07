@@ -6,20 +6,20 @@ const AuthController = {
             await AuthService.registerUser(req.body);
             res.status(201).json({ message: 'Đăng ký tài khoản thành công!' });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            next(error);
         }
     },
 
     loginUser: async (req, res) => {
         try {
-            const { email, password } = req.body;
-            const result = await AuthService.loginUser(email, password);
+            const { identifier, password } = req.body;
+            const result = await AuthService.loginUser(username, email, password);
             res.status(200).json({
-                message: 'đăng nhập thành công!',
+                message: 'Đăng nhập thành công!',
                 data: result
             });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            next(error);
         }
     },
 
@@ -28,11 +28,11 @@ const AuthController = {
             const { refreshToken } = req.body;
             const result = await AuthService.refreshAccessToken(refreshToken);
             res.status(200).json({
-                message: 'refresh completed!',
+                message: 'Refresh completed!',
                 data: result
             });
         } catch (error) {
-            res.status(401).json({ message: error.message });
+            next(error);
         }
     }
 };
