@@ -1,7 +1,6 @@
 const AuthRepository = require('./auth.repository');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { route } = require('./auth.route');
 const AppError = require('../../utils/AppError');
 
 const AuthService = {
@@ -79,6 +78,10 @@ const AuthService = {
             expiresIn: '15m'
         });
         return { accessToken: newAccessToken };
+    },
+
+    logoutUser: async (userId) => {
+        await AuthRepository.clearRefreshToken(userId);
     }
 };
 

@@ -1,6 +1,6 @@
 const UserService = require('./user.service');
 const UserController = {
-    getAllUsers: async (req, res) => {
+    getAllUsers: async (req, res, next) => {
         try {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
@@ -11,8 +11,7 @@ const UserController = {
                 pagination: result.pagination
             });
         } catch (error) {
-            console.error('UserController.getAllUsers error:', error);
-            res.status(500).json({ message: 'Lỗi Server!' });
+            next(error);
         }
     }
 };

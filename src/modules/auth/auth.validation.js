@@ -7,18 +7,18 @@ const AuthValidation = {
             .min(3)
             .max(50)
             .required()
-            .message({
+            .messages({
                 'string.empty': 'Tên đăng nhập không được để trống',
                 'string.pattern.base': 'Tên đăng nhập chỉ dc chứa chữ, số, -, _',
                 'string.min': 'Tên đăng nhập cần chứa ít nhất 3 kí tự!',
                 'string.max': 'Tên đăng nhập quá dài!'
             }),
 
-        email: Joi.string().trim().email().required().message({
+        email: Joi.string().trim().email().required().messages({
             'string.empty': 'Email không được để trống!',
             'string.email': 'Email không hợp lệ!'
         }),
-        password: Joi.string().trim().min(6).max(100).required().message({
+        password: Joi.string().trim().min(6).max(100).required().messages({
             'string.empty': 'Mật khẩu không được để trống!',
             'string.min': 'Mật khẩu quá ngắn!',
             'string.max': 'Mật khẩu quá dài!'

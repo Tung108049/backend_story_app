@@ -11,6 +11,7 @@ const AuthRepository = {
     checkDuplicate: async (username, email) => {
         const query = `SELECT * FROM users WHERE username = ? OR email = ?`;
         const [rows] = await db.query(query, [username, email]);
+        return rows[0];
     },
 
     getUserByIdentifier: async (identifier) => {
@@ -21,8 +22,8 @@ const AuthRepository = {
 
     saveRefreshToken: async (userId, refreshToken) => {
         const query = `UPDATE users 
-                      SET refresh_token = ? 
-                      WHERE id = ?`;
+                       SET refresh_token = ? 
+                       WHERE id = ?`;
         await db.query(query, [refreshToken, userId]);
     },
 
@@ -32,6 +33,13 @@ const AuthRepository = {
                        WHERE refresh_token = ?`;
         const [rows] = await db.query(query, [refreshToken]);
         return rows[0];
+    },
+
+    clearRefreshToken: async (userId) => {
+        const query = `UPDATE users
+                       SET refresh_token = ?
+                       WHERE id = ?`;
+        await db.query(query, [null, userId]);
     }
 };
 
