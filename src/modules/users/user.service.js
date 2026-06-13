@@ -1,10 +1,10 @@
 const UserRepository = require('./user.repository');
-const bcrypt = require('bcrypt');
+
 const UserService = {
     getAllUsers: async (page, limit) => {
         const offset = (page - 1) * limit;
         const [users, total] = await Promise.all([
-            UserRepository.getAllUsersFromDB(limit, offset),
+            UserRepository.getAllUsers(limit, offset),
             UserRepository.countAllUsers()
         ]);
         return {
@@ -18,6 +18,11 @@ const UserService = {
                 hasPrev: page > 1
             }
         };
+    },
+
+    updateAvatar: async (userId, avatarUrl) => {
+        await UserRepository.updateAvatarUrl(userId, avatarUrl);
+        return avatarUrl;
     }
 };
 

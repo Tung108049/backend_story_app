@@ -1,10 +1,10 @@
 const db = require('../../config/database');
 
 const AuthRepository = {
-    createUser: async (username, email, password_hash, nickname) => {
-        const query = `INSERT INTO users (username, email, password_hash, nickname)
-                       VALUES(?, ?, ?, ?)`;
-        const [result] = await db.query(query, [username, email, password_hash, nickname]);
+    createUser: async (username, email, password_hash, nickname, avatar_url) => {
+        const query = `INSERT INTO users (username, email, password_hash, nickname, avatar_url)
+                       VALUES(?, ?, ?, ?, ?)`;
+        const [result] = await db.query(query, [username, email, password_hash, nickname, avatar_url]);
         return result;
     },
 

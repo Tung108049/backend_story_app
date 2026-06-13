@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const AppError = require('../../utils/AppError');
 
 const AuthService = {
-    registerUser: async (userData) => {
+    registerUser: async (userData, avatarUrl = null) => {
         const { username, email, password } = userData;
         const existingUser = await AuthRepository.checkDuplicate(username, email);
         if (existingUser) {
@@ -17,7 +17,7 @@ const AuthService = {
         }
         const passwordHash = await bcrypt.hash(password, 10);
         const nickname = username;
-        return await AuthRepository.createUser(username, email, passwordHash, nickname);
+        return await AuthRepository.createUser(username, email, passwordHash, nickname, avatarUrl);
     },
 
     loginUser: async (identifier, password) => {

@@ -3,7 +3,8 @@ const AuthService = require('./auth.service');
 const AuthController = {
     registerUser: async (req, res, next) => {
         try {
-            await AuthService.registerUser(req.body);
+            const avatarUrl = req.file ? req.file.path : null;
+            await AuthService.registerUser(req.body, avatarUrl);
             res.status(201).json({ message: 'Đăng ký tài khoản thành công!' });
         } catch (error) {
             next(error);
