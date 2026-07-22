@@ -1,19 +1,19 @@
 const express = require('express');
+const TagController = require('./tag.controller');
 const verifyToken = require('../../middlewares/auth.middleware');
 const checkRole = require('../../middlewares/role.middleware');
 const validate = require('../../middlewares/validate.middleware');
-const GenreController = require('./genre.controller');
-const GenreValidation = require('./genre.validation');
+const TagValidation = require('./tag.validation');
 const router = express.Router();
 
-router.get('/', GenreController.getAllGenres);
+router.get('/', TagController.getAllTags);
 
 router.post(
     '/',
     verifyToken,
     checkRole('moderator', 'admin'),
-    validate(GenreValidation.createGenreSchema),
-    GenreController.createGenre
+    validate(TagValidation.createTagSchema),
+    TagController.createTag
 );
 
 module.exports = router;

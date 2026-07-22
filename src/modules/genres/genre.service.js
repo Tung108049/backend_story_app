@@ -9,15 +9,15 @@ const GenreService = {
             if (existingGenre.name.toLowerCase() === name.toLowerCase()) {
                 throw new AppError('Tên thể loại đã tồn tại!', 409);
             }
-            throw new AppError('Slug đã tồn tại!', 409);
+            throw new AppError('Slug thể loại đã tồn tại!', 409);
         }
 
-        const id = await GenreRepository.createGenre(name, slug);
+        const idNewGenre = await GenreRepository.createGenre(name, slug);
 
-        return { id: id, name, slug };
+        return { id: idNewGenre, name, slug };
     },
 
-    getAllGenre: async () => {
+    getAllGenres: async () => {
         return await GenreRepository.getAllGenres();
     }
 };

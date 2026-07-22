@@ -14,10 +14,10 @@ const GenreController = {
         }
     },
 
-    getAllGenre: async (req, res, next) => {
+    getAllGenres: async (req, res, next) => {
         try {
             const genres = await GenreService.getAllGenre();
-            res.status(201).json({
+            res.status(200).json({
                 message: 'Lấy danh sách thể loại thành công!',
                 data: genres
             });
