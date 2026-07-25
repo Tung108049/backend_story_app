@@ -16,11 +16,13 @@ const userRoutes = require('./src/modules/users/user.route');
 const authRoutes = require('./src/modules/auth/auth.route');
 const genreRoutes = require('./src/modules/genres/genre.route');
 const tagRoutes = require('./src/modules/tags/tag.route');
+const storyRoutes = require('./src/modules/stories/story.route');
 
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/genres', genreRoutes);
 app.use('/api/tags', tagRoutes);
+app.use('/api/stories', storyRoutes);
 
 app.get('/api/ping', (req, res) => {
     res.status(200).json({
