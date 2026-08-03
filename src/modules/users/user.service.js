@@ -1,6 +1,23 @@
 const UserRepository = require('./user.repository');
+const AppError = require('../../utils/AppError');
 
 const UserService = {
+    getPublicUserById: async (id) => {
+        const user = await UserRepository.getPublicUserById(id);
+        if (!user) {
+            throw new AppError('Người dùng không tồn tại!', 404);
+        }
+        return user;
+    },
+
+    getMyProfile: async (id) => {
+        const user = await UserRepository.getFullUserById(id);
+        if (!user) {
+            throw new AppError('Người dùng không tồn tại!', 404);
+        }
+        return user;
+    },
+
     getAllUsers: async (page, limit) => {
         const offset = (page - 1) * limit;
         const [users, total] = await Promise.all([

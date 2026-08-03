@@ -3,10 +3,24 @@ const AppError = require('../../utils/AppError');
 
 const StoryService = {
     createStory: async (storyData, authorId) => {
-        const { title, slug } = storyData;
+        const { title, slug, genre_ids, tag_ids } = storyData;
         const existingStory = await StoryRepository.checkDuplicate(title, slug);
         if (existingStory) {
             throw new AppError('Tên truyện hoặc slug đã tồn tại!', 409);
+        }
+
+        if (genre_ids && genre_ids.length > 0) {
+            const isGenresValid = await StoryRepository.checkGenresExist(genre_ids);
+            if (!isGenresValid) {
+                throw new AppError('Một hoặc nhiều thể loại không tồn tại!', 400);
+            }
+        }
+
+        if (tag_ids && tag_ids.length > 0) {
+            const isTagsValid = await StoryRepository.checkTagsExist(tag_ids);
+            if (!isTagsValid) {
+                throw new AppError('Một hoặc nhiều thẻ không tồn tại!', 400);
+            }
         }
 
         const newStoryData = {

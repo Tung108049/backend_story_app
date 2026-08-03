@@ -17,6 +17,26 @@ const UserRepository = {
     updateAvatarUrl: async (userId, avatarUrl) => {
         const query = `UPDATE users SET avatar_url = ? WHERE id = ?`;
         await db.execute(query, [avatarUrl, userId]);
+    },
+
+    getPublicUserById: async (id) => {
+        const query = `
+            SELECT id, username, nickname, role, avatar_url, bio, gender, level, created_at 
+            FROM users 
+            WHERE id = ? AND deleted_at IS NULL
+        `;
+        const [rows] = await db.execute(query, [id]);
+        return rows[0] || null;
+    },
+
+    getFullUserById: async (id) => {
+        const query = `
+            SELECT id, username, email, nickname, role, avatar_url, bio, dob, gender, coin, level, status, created_at 
+            FROM users 
+            WHERE id = ? AND deleted_at IS NULL
+        `;
+        const [rows] = await db.execute(query, [id]);
+        return rows[0] || null;
     }
 };
 module.exports = UserRepository;

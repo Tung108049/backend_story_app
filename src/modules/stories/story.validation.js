@@ -20,17 +20,16 @@ const StoryValidation = {
         cover_image_url: Joi.string().trim().allow(null, '').optional(),
         status: Joi.string().valid('ongoing', 'completed', 'dropped').default('ongoing'),
         content_type: Joi.string().valid('novel', 'comic').default('novel'),
-        price_type: Joi.string().valid('free', 'one_time', 'per_chapter').default('free'),
-        price: Joi.number()
-            .precision(2)
-            .min(0)
-            .when('price_type', {
-                is: Joi.valid('one_time', 'per_chapter'),
-                then: Joi.required().messages({
-                    'any.required': 'Vui lòng nhập giá cho truyện trả phí!'
-                }),
-                otherwise: Joi.optional().allow(null)
-            })
+        genre_ids: Joi.array().items(Joi.number().integer().positive()).optional().messages({
+            'array.base': 'genre_ids phải là một mảng!',
+            'number.base': 'Các phần tử trong genre_ids phải là số nguyên!',
+            'number.positive': 'Các phần tử trong genre_ids phải lớn hơn 0!'
+        }),
+        tag_ids: Joi.array().items(Joi.number().integer().positive()).optional().messages({
+            'array.base': 'tag_ids phải là một mảng!',
+            'number.base': 'Các phần tử trong tag_ids phải là số nguyên!',
+            'number.positive': 'Các phần tử trong tag_ids phải lớn hơn 0!'
+        })
     })
 };
 

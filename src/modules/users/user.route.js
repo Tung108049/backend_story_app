@@ -13,5 +13,7 @@ router.put(
     UserController.updateAvatar
 );
 router.get('/', verifyToken, checkRole('admin', 'moderator'), UserController.getAllUsers);
+router.get('/me', verifyToken, UserController.getMyProfile);
+router.get('/:id', UserController.getUserById);
 
 module.exports = router;
