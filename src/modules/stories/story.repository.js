@@ -103,6 +103,12 @@ const StoryRepository = {
 
         const [rows] = await db.execute(query, params);
         return rows;
+    },
+
+    getDetailStoryById: async (storyId) => {
+        const query = `SELECT * FROM stories WHERE id = ? AND deleted_at IS NULL`;
+        const [rows] = await db.execute(query, [storyId]);
+        return rows[0] || null;
     }
 };
 
