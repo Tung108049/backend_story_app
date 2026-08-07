@@ -30,6 +30,26 @@ const StoryValidation = {
             'number.base': 'Các phần tử trong tag_ids phải là số nguyên!',
             'number.positive': 'Các phần tử trong tag_ids phải lớn hơn 0!'
         })
+    }),
+    
+    updateStorySchema: Joi.object({
+        title: Joi.string().trim().min(1).max(255).optional().messages({
+            'string.empty': 'Tên truyện không được để trống!',
+            'string.min': 'Tên truyện phải có ít nhất {#limit} ký tự!',
+            'string.max': 'Tên truyện không được vượt quá {#limit} ký tự!'
+        }),
+        description: Joi.string().trim().allow(null, '').optional(),
+        status: Joi.string().valid('ongoing', 'completed', 'dropped').optional(),
+        genre_ids: Joi.array().items(Joi.number().integer().positive()).optional().messages({
+            'array.base': 'genre_ids phải là một mảng!',
+            'number.base': 'Các phần tử trong genre_ids phải là số nguyên!',
+            'number.positive': 'Các phần tử trong genre_ids phải lớn hơn 0!'
+        }),
+        tag_ids: Joi.array().items(Joi.number().integer().positive()).optional().messages({
+            'array.base': 'tag_ids phải là một mảng!',
+            'number.base': 'Các phần tử trong tag_ids phải là số nguyên!',
+            'number.positive': 'Các phần tử trong tag_ids phải lớn hơn 0!'
+        })
     })
 };
 

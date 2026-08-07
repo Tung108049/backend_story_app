@@ -17,7 +17,7 @@ const StoryController = {
 
     getStories: async (req, res, next) => {
         try {
-            const { content_type, sort_by, limit, keyword, genre_id, tag_id } = req.query;
+            const { content_type, sort_by, limit, page, keyword, genre_id, tag_id } = req.query;
 
             if (!content_type) {
                 return res.status(400).json({
@@ -25,13 +25,65 @@ const StoryController = {
                 });
             }
 
-            const filters = { content_type, sort_by, limit, keyword, genre_id, tag_id };
+            const filters = { content_type, sort_by, limit, page, keyword, genre_id, tag_id };
             const stories = await StoryService.getStories(filters);
 
             res.status(200).json({
                 message: 'Lấy danh sách truyện thành công!',
                 data: stories
             });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getDetailStory: async(req, res, next) => {
+        try {
+            const { storyId } = req.params;
+            const story = await StoryService.getDetailStoryById(storyId);
+            res.status(200).json({
+                message: 'Lấy thông tin truyện thành công!',
+                data: story
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getMyStories: async (req, res, next) => {
+        try {
+            const authorId = req.user.id;
+            const stories = await StoryService.getMyStories(authorId);
+            res.status(200).json({
+                message: 'Lấy danh sách truyện của bạn thành công!',
+                data: stories
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    updateStory: async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            const updateData = req.body;
+            
+            if (req.file) {
+                updateData.cover_image_url = req.file.path;
+            }
+
+            const result = await StoryService.updateStory(id, updateData, req.user);
+            res.status(200).json({ message: result.message });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    deleteStory: async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            const result = await StoryService.deleteStory(id, req.user);
+            res.status(200).json({ message: result.message });
         } catch (error) {
             next(error);
         }

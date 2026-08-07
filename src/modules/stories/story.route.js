@@ -7,7 +7,7 @@ const StoryController = require('./story.controller');
 const router = express.Router();
 const ChapterController = require('../chapter/chapter.controller');
 const ChapterValidation = require('../chapter/chapter.validation');
-const { uploadChapterIMG } = require('../../middlewares/upload.middleware');
+const { uploadChapterIMG, uploadStoryCover } = require('../../middlewares/upload.middleware');
 
 //story
 router.post(
@@ -19,6 +19,36 @@ router.post(
 );
 
 router.get('/', StoryController.getStories);
+
+router.get(
+    '/my-stories',
+    verifyToken,
+    checkRole('moderator', 'admin'),
+    StoryController.getMyStories
+);
+
+router.get(
+    '/:storyId',
+    StoryController.getDetailStory
+);
+
+// Sửa truyện
+router.put(
+    '/:id',
+    verifyToken,
+    checkRole('moderator', 'admin'),
+    uploadStoryCover.single('cover_image'),
+    validate(StoryValidation.updateStorySchema),
+    StoryController.updateStory
+);
+
+// Xóa truyện (Soft Delete)
+router.delete(
+    '/:id',
+    verifyToken,
+    checkRole('moderator', 'admin'),
+    StoryController.deleteStory
+);
 
 //chapter
 router.post(
