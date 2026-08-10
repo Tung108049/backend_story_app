@@ -65,7 +65,7 @@ const ChapterService = {
             }
 
             if (newChapterData.status === 'published' && story.published_at === null) {
-                await StoryRepository.publishStory(storyId);
+                await StoryRepository.publishStory(storyId, connection);
             }
 
             await connection.commit();

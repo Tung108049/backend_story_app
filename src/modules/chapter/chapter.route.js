@@ -15,7 +15,7 @@ router.get('/:id', ChapterController.getChapterDetail);
 router.put(
     '/:id',
     verifyToken,
-    checkRole('moderator', 'admin'),
+    checkRole('user', 'moderator', 'admin'),
     validate(ChapterValidation.updateChapterSchema),
     ChapterController.updateChapter
 );
@@ -26,7 +26,7 @@ router.put(
 router.put(
     '/:id/images',
     verifyToken,
-    checkRole('moderator', 'admin'),
+    checkRole('user', 'moderator', 'admin'),
     uploadChapterIMG.single('image'),
     validate(ChapterValidation.modifyComicImageSchema),
     ChapterController.modifyComicImage
@@ -36,7 +36,7 @@ router.put(
 router.delete(
     '/:id',
     verifyToken,
-    checkRole('moderator', 'admin'),
+    checkRole('user', 'moderator', 'admin'),
     ChapterController.deleteChapter
 );
 

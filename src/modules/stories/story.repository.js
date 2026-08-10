@@ -100,8 +100,9 @@ const StoryRepository = {
 
         query += ` LIMIT ? OFFSET ?`;
         
-        const limitNumber = Number(limit);
-        const offset = (Number(page) - 1) * limitNumber;
+        const limitNumber = Number(limit) || 30;
+        const pageNumber = Number(page) || 1;
+        const offset = (Math.max(pageNumber, 1) - 1) * limitNumber;
         
         params.push(limitNumber, offset);
 
@@ -126,9 +127,10 @@ const StoryRepository = {
         return rows;
     },
 
-    publishStory: async (storyId) => {
+    publishStory: async (storyId, connection = null) => {
         const query = `UPDATE stories SET published_at = CURRENT_TIMESTAMP WHERE id = ? AND published_at IS NULL`;
-        await db.execute(query, [storyId]);
+        const executor = connection || db;
+        await executor.execute(query, [storyId]);
     },
 
     updateStory: async (storyId, updateData) => {

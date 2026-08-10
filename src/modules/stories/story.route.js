@@ -13,7 +13,7 @@ const { uploadChapterIMG, uploadStoryCover } = require('../../middlewares/upload
 router.post(
     '/',
     verifyToken,
-    checkRole('moderator', 'admin'),
+    checkRole('user', 'moderator', 'admin'),
     validate(StoryValidation.createStorySchema),
     StoryController.createStory
 );
@@ -23,7 +23,7 @@ router.get('/', StoryController.getStories);
 router.get(
     '/my-stories',
     verifyToken,
-    checkRole('moderator', 'admin'),
+    checkRole('user', 'moderator', 'admin'),
     StoryController.getMyStories
 );
 
@@ -36,7 +36,7 @@ router.get(
 router.put(
     '/:id',
     verifyToken,
-    checkRole('moderator', 'admin'),
+    checkRole('user', 'moderator', 'admin'),
     uploadStoryCover.single('cover_image'),
     validate(StoryValidation.updateStorySchema),
     StoryController.updateStory
@@ -46,7 +46,7 @@ router.put(
 router.delete(
     '/:id',
     verifyToken,
-    checkRole('moderator', 'admin'),
+    checkRole('user', 'moderator', 'admin'),
     StoryController.deleteStory
 );
 
@@ -54,7 +54,7 @@ router.delete(
 router.post(
     '/:storyId/chapters',
     verifyToken,
-    checkRole('moderator', 'admin'),
+    checkRole('user', 'moderator', 'admin'),
     uploadChapterIMG.array('images', 50),
     validate(ChapterValidation.createChapterSchema),
     ChapterController.createChapter
