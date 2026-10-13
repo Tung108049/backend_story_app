@@ -27,7 +27,9 @@ Mỗi chức năng: phân tích → thực hiện → test → xem phản hồi/
   Google đã test nghiệp vụ bằng mock thư viện; backend thật từ chối token giả với 401.
   Lần thử đầu dùng nhầm Android Client ID làm serverClientId. Đã đối chiếu cột Type
   trong Google Cloud và thay đúng Web application Client ID ở Flutter/backend;
-  đang kiểm tra lại đăng nhập bằng tài khoản thật.
+  đã đăng nhập bằng tài khoản Google thật trên máy ảo Android thành công.
+  Log xác nhận POST /api/auth/google và GET /api/users/me trả 200;
+  đăng xuất rồi đăng nhập Google lần nữa cũng trả 200.
 - App/API, đọc, hồ sơ, tủ sách/lịch sử: đã triển khai; bổ sung test form liên kết Google.
 - APK debug: build thành công; integration test Android/API thật đã qua
   (đọc/chuyển chương → đăng nhập → lưu truyện → lịch sử).
