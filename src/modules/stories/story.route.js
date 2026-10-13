@@ -18,7 +18,7 @@ router.post(
     StoryController.createStory
 );
 
-router.get('/', StoryController.getStories);
+router.get('/', validate(StoryValidation.listStoriesSchema, 'query'), StoryController.getStories);
 
 router.get(
     '/my-stories',

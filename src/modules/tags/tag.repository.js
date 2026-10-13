@@ -3,7 +3,7 @@ const db = require('../../config/database');
 const TagRepository = {
     createTag: async (name, slug) => {
         const query = `INSERT INTO tags (name, slug) VALUES (?, ?)`;
-        const result = await db.execute(query, [name, slug]);
+        const [result] = await db.execute(query, [name, slug]);
         return result.insertId;
     },
 

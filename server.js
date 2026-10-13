@@ -10,7 +10,8 @@ const port = process.env.PORT || 3000;
 app.use(morgan('dev'));
 app.use(helmet());
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '2mb' }));
+app.use('/demo', express.static(require('path').join(__dirname, 'public/demo')));
 
 const userRoutes = require('./src/modules/users/user.route');
 const authRoutes = require('./src/modules/auth/auth.route');
@@ -33,8 +34,13 @@ app.get('/api/ping', (req, res) => {
 });
 
 const errorHandler = require('./src/middlewares/error.middleware');
+app.use((req, res) => res.status(404).json({ message: 'API không tồn tại!' }));
 app.use(errorHandler);
 
-app.listen(port, () => {
-    console.log(`Server đã mở: http:localhost:${port}`);
-});
+if (require.main === module) {
+    app.listen(port, '0.0.0.0', () => {
+        console.log(`Server đã mở tại cổng ${port}`);
+    });
+}
+
+module.exports = app;

@@ -40,11 +40,12 @@ const StoryService = {
 
     getDetailStoryById: async (storyId) => {
         const commonStory = await StoryRepository.getDetailStoryById(storyId);
-        if (!commonStory) {
+        if (!commonStory || !commonStory.published_at) {
             throw new AppError('Truyện không tồn tại!', 404);
         }
         
         const chapters = await ChapterRepository.getChaptersByStoryId(storyId);
+        if (!chapters.length) throw new AppError('Truyện chưa có chương xuất bản!', 404);
 
         const data = {
             ...commonStory,

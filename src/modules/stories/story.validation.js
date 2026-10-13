@@ -1,6 +1,15 @@
 const Joi = require('joi');
 
 const StoryValidation = {
+    listStoriesSchema: Joi.object({
+        content_type: Joi.string().valid('novel', 'comic'),
+        sort_by: Joi.string().valid('latest', 'views').default('latest'),
+        limit: Joi.number().integer().min(1).max(100).default(30),
+        page: Joi.number().integer().min(1).max(100000).default(1),
+        keyword: Joi.string().trim().max(100).allow(''),
+        genre_id: Joi.number().integer().positive(),
+        tag_id: Joi.number().integer().positive()
+    }),
     createStorySchema: Joi.object({
         slug: Joi.string()
             .pattern(/^[a-z0-9\-]+$/)

@@ -29,8 +29,8 @@ const UserController = {
 
     getAllUsers: async (req, res, next) => {
         try {
-            const page = parseInt(req.query.page) || 1;
-            const limit = parseInt(req.query.limit) || 10;
+            const page = Math.max(1, parseInt(req.query.page) || 1);
+            const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 10));
             const result = await UserService.getAllUsers(page, limit);
             res.status(200).json({
                 message: 'Lấy danh sách user thành công!',

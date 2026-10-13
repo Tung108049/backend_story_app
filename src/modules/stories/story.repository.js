@@ -17,7 +17,7 @@ const StoryRepository = {
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             `;
             const [result] = await connection.execute(query, [
-                slug, title, description, cover_image_url, author_id, content_type, status
+                slug, title, description ?? null, cover_image_url ?? null, author_id, content_type, status
             ]);
 
             const newStoryId = result.insertId;
@@ -66,9 +66,14 @@ const StoryRepository = {
         const { content_type, sort_by, limit = 30, page = 1, keyword, genre_id, tag_id } = filters;
 
         let query = `
-            SELECT s.id, s.title, s.slug, s.cover_image_url, s.status, s.content_type, s.published_at
-            FROM stories s 
+            SELECT s.*, u.nickname AS author_name,
+                   (SELECT GROUP_CONCAT(g.name SEPARATOR '|')
+                    FROM story_genres sg JOIN genres g ON g.id = sg.genre_id
+                    WHERE sg.story_id = s.id) AS genre_names
+            FROM stories s
+            JOIN users u ON u.id = s.author_id
             WHERE s.deleted_at IS NULL AND s.published_at IS NOT NULL
+              AND EXISTS (SELECT 1 FROM chapters c WHERE c.story_id = s.id AND c.status = 'published')
         `;
         const params = [];
 
@@ -93,27 +98,39 @@ const StoryRepository = {
         }
 
         if (sort_by === 'views') {
-            query += ` ORDER BY s.views_count DESC`;
+            query += ` ORDER BY s.views_count DESC, s.id DESC`;
         } else {
-            query += ` ORDER BY s.published_at DESC`;
+            query += ` ORDER BY s.published_at DESC, s.id DESC`;
         }
 
         query += ` LIMIT ? OFFSET ?`;
         
-        const limitNumber = Number(limit) || 30;
-        const pageNumber = Number(page) || 1;
+        const limitNumber = Number(limit);
+        const pageNumber = Number(page);
         const offset = (Math.max(pageNumber, 1) - 1) * limitNumber;
         
         params.push(limitNumber, offset);
 
-        const [rows] = await db.execute(query, params);
-        return rows;
+        const [rows] = await db.query(query, params);
+        return rows.map(story => {
+            const { genre_names, ...data } = story;
+            return { ...data, genres: genre_names ? genre_names.split('|') : [] };
+        });
     },
 
     getDetailStoryById: async (storyId) => {
-        const query = `SELECT * FROM stories WHERE id = ? AND deleted_at IS NULL`;
+        const query = `
+            SELECT s.*, u.nickname AS author_name
+            FROM stories s JOIN users u ON u.id = s.author_id
+            WHERE s.id = ? AND s.deleted_at IS NULL
+        `;
         const [rows] = await db.execute(query, [storyId]);
-        return rows[0] || null;
+        if (!rows[0]) return null;
+        const [genres] = await db.execute(`
+            SELECT g.name FROM genres g
+            JOIN story_genres sg ON sg.genre_id = g.id WHERE sg.story_id = ?
+        `, [storyId]);
+        return { ...rows[0], genres: genres.map(genre => genre.name) };
     },
 
     getMyStories: async (authorId) => {

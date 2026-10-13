@@ -20,9 +20,12 @@ const ChapterService = {
 
     getChapterDetail: async (chapterId) => {
         const chapter = await ChapterRepository.getChapterById(chapterId);
-        if (!chapter) throw new AppError('Chương truyện không tồn tại!', 404);
+        if (!chapter || chapter.status !== 'published') throw new AppError('Chương truyện không tồn tại!', 404);
         
         const story = await ChapterService._getAndValidateStoryForChapter(chapter.story_id);
+        if (!story.published_at) throw new AppError('Truyện chưa xuất bản!', 404);
+        await db.execute('UPDATE chapters SET views_count = views_count + 1 WHERE id = ?', [chapterId]);
+        await db.execute('UPDATE stories SET views_count = views_count + 1 WHERE id = ?', [story.id]);
         
         let responseData = { ...chapter };
         

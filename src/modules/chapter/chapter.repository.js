@@ -98,7 +98,7 @@ const ChapterRepository = {
         let query = `
             SELECT id, chapter_number, title, status, views_count, created_at
             FROM chapters
-            WHERE story_id = ?
+            WHERE story_id = ? AND status = 'published'
             ORDER BY chapter_number ASC
         `;
         const [rows] = await db.execute(query, [storyId]);

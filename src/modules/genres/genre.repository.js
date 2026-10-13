@@ -3,7 +3,7 @@ const db = require('../../config/database');
 const GenreRepository = {
     createGenre: async (name, slug) => {
         const query = `INSERT INTO genres (name, slug) VALUES(?, ?)`;
-        const result = await db.execute(query, [name, slug]);
+        const [result] = await db.execute(query, [name, slug]);
         return result.insertId;
     },
 

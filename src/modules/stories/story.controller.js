@@ -19,12 +19,6 @@ const StoryController = {
         try {
             const { content_type, sort_by, limit, page, keyword, genre_id, tag_id } = req.query;
 
-            if (!content_type) {
-                return res.status(400).json({
-                    message: 'Vui lòng cung cấp loại truyện (content_type: novel hoặc comic)!'
-                });
-            }
-
             const filters = { content_type, sort_by, limit, page, keyword, genre_id, tag_id };
             const stories = await StoryService.getStories(filters);
 

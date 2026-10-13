@@ -3,14 +3,14 @@ const db = require('../../config/database');
 const UserRepository = {
     getAllUsers: async (limit, offset) => {
         const query = `SELECT id, username, email, role, avatar_url 
-                           FROM users  
+                           FROM users WHERE deleted_at IS NULL
                            LIMIT ? OFFSET ?`;
-        const [rows] = await db.execute(query, [limit, offset]);
+        const [rows] = await db.query(query, [limit, offset]);
         return rows;
     },
 
     countAllUsers: async () => {
-        const [rows] = await db.execute('SELECT COUNT(*) as total FROM users');
+        const [rows] = await db.execute('SELECT COUNT(*) as total FROM users WHERE deleted_at IS NULL');
         return rows[0].total;
     },
 
