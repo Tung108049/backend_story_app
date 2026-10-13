@@ -26,6 +26,7 @@ app.use('/api/genres', genreRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/stories', storyRoutes);
 app.use('/api/chapters', chapterRoutes);
+app.use('/api/library', require('./src/modules/library/library.route'));
 
 app.get('/api/ping', (req, res) => {
     res.status(200).json({
