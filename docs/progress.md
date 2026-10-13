@@ -24,9 +24,10 @@ Mỗi chức năng: phân tích → thực hiện → test → xem phản hồi/
 
 - Nền API/database: đã triển khai; test API trên MySQL và schema mới/chạy lại đã qua.
 - Auth/Google: đã triển khai; email/mật khẩu và vòng đời phiên đã test.
-  Google đã test nghiệp vụ bằng mock thư viện; Web client ID đã cấu hình,
-  backend thật từ chối token giả với 401. Chờ người dùng chọn tài khoản trên
-  máy ảo để nghiệm thu OAuth thật.
+  Google đã test nghiệp vụ bằng mock thư viện; backend thật từ chối token giả với 401.
+  Lần thử đầu dùng nhầm Android Client ID làm serverClientId. Đã đối chiếu cột Type
+  trong Google Cloud và thay đúng Web application Client ID ở Flutter/backend;
+  đang kiểm tra lại đăng nhập bằng tài khoản thật.
 - App/API, đọc, hồ sơ, tủ sách/lịch sử: đã triển khai; 7 test Flutter đã qua.
 - APK debug: build thành công; integration test Android/API thật đã qua
   (đọc/chuyển chương → đăng nhập → lưu truyện → lịch sử).
