@@ -2,7 +2,7 @@ const Joi = require('joi');
 
 const ChapterValidation = {
     createChapterSchema: Joi.object({
-        chapter_number: Joi.number().min(0).required().messages({
+        chapter_number: Joi.number().min(0).max(9999.9).precision(1).required().messages({
             'number.base': 'Số chương phải là một số',
             'number.min': 'Số chương không được âm',
             'any.required': 'Số chương là bắt buộc'
@@ -15,7 +15,7 @@ const ChapterValidation = {
     }),
     
     updateChapterSchema: Joi.object({
-        chapter_number: Joi.number().min(0).messages({
+        chapter_number: Joi.number().min(0).max(9999.9).precision(1).messages({
             'number.base': 'Số chương phải là một số',
             'number.min': 'Số chương không được âm'
         }),

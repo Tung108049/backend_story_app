@@ -50,6 +50,8 @@ test('API với MySQL thật: tài khoản, truyện, chương và thư viện',
             const tag = await request('/tags', 'POST', { name: `Tag ${suffix}`, slug: `tag-${suffix}` }, admin.accessToken);
             assert.equal(tag.status, 201); assert.ok(tag.body.data.id); tagIds.push(tag.body.data.id);
             assert.equal((await request('/stories?limit=-1')).status, 400);
+            assert.equal((await request('/stories/abc')).status, 400);
+            assert.equal((await request('/chapters/-1')).status, 400);
             assert.equal((await request('/stories?content_type=bad')).status, 400);
             assert.equal((await request('/auth/register', 'POST', { username: 'bad-name', email: 'bad@example.test', password: 'Testing123!' })).status, 400);
         });
@@ -86,6 +88,29 @@ test('API với MySQL thật: tài khoản, truyện, chương và thư viện',
             assert.equal((await request('/library/bookshelf', 'GET', undefined, reader.accessToken)).body.data.length, 0);
             await request('/library/history', 'DELETE', undefined, reader.accessToken);
             assert.equal((await request('/library/history', 'GET', undefined, reader.accessToken)).body.data.length, 0);
+        });
+        await t.test('Truyện tranh trả ảnh đúng thứ tự; xóa chương dọn ảnh', async () => {
+            const story = await request('/stories', 'POST', {
+                title: `Comic ${suffix}`, slug: `comic-${suffix}`, content_type: 'comic'
+            }, author.accessToken);
+            assert.equal(story.status, 201);
+            const comicId = story.body.data.id;
+            storyIds.push(comicId);
+            const chapter = await request(`/stories/${comicId}/chapters`, 'POST', {
+                chapter_number: 1, title: 'Comic chapter', status: 'published'
+            }, author.accessToken);
+            assert.equal(chapter.status, 201);
+            const id = chapter.body.data.id;
+            await db.execute('INSERT INTO chapter_images (chapter_id, image_url, page_number) VALUES (?, ?, ?), (?, ?, ?)',
+                [id, '/demo/page.jpg', 200, id, '/demo/page.jpg', 100]);
+            const result = await request(`/chapters/${id}`);
+            assert.equal(result.status, 200);
+            assert.deepEqual(result.body.data.images.map(image => image.page_number), [100, 200]);
+            assert.equal((await request(`/chapters/${id}`, 'PUT', { content: 'Text' }, author.accessToken)).status, 400);
+            assert.equal((await request(`/chapters/${id}`, 'DELETE', undefined, author.accessToken)).status, 200);
+            const [images] = await db.execute('SELECT id FROM chapter_images WHERE chapter_id = ?', [id]);
+            assert.equal(images.length, 0);
+            assert.equal((await request(`/stories/${comicId}`)).status, 404);
         });
         await t.test('Google: xác minh qua thư viện; tạo/tìm identity; từ chối token lỗi', async () => {
             const originalVerify = OAuth2Client.prototype.verifyIdToken;

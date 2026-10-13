@@ -4,6 +4,10 @@ const verifyToken = require('../../middlewares/auth.middleware');
 const validate = require('../../middlewares/validate.middleware');
 const LibraryController = require('./library.controller');
 const router = express.Router();
+router.param('id', (req, res, next, value) => {
+    if (!/^[1-9]\d*$/.test(value)) return res.status(400).json({ message: 'ID truyện không hợp lệ!' });
+    next();
+});
 
 router.use(verifyToken);
 router.get('/bookshelf', LibraryController.getBookshelf);

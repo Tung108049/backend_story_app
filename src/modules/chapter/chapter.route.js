@@ -7,6 +7,10 @@ const validate = require('../../middlewares/validate.middleware');
 const { uploadChapterIMG } = require('../../middlewares/upload.middleware');
 
 const router = express.Router();
+router.param('id', (req, res, next, value) => {
+    if (!/^[1-9]\d*$/.test(value)) return res.status(400).json({ message: 'ID chương không hợp lệ!' });
+    next();
+});
 
 // Lấy chi tiết nội dung 1 chapter (Public API cho người đọc)
 router.get('/:id', ChapterController.getChapterDetail);

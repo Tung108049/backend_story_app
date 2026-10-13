@@ -29,12 +29,12 @@ const StoryValidation = {
         cover_image_url: Joi.string().trim().allow(null, '').optional(),
         status: Joi.string().valid('ongoing', 'completed', 'dropped').default('ongoing'),
         content_type: Joi.string().valid('novel', 'comic').default('novel'),
-        genre_ids: Joi.array().items(Joi.number().integer().positive()).optional().messages({
+        genre_ids: Joi.array().unique().items(Joi.number().integer().positive()).optional().messages({
             'array.base': 'genre_ids phải là một mảng!',
             'number.base': 'Các phần tử trong genre_ids phải là số nguyên!',
             'number.positive': 'Các phần tử trong genre_ids phải lớn hơn 0!'
         }),
-        tag_ids: Joi.array().items(Joi.number().integer().positive()).optional().messages({
+        tag_ids: Joi.array().unique().items(Joi.number().integer().positive()).optional().messages({
             'array.base': 'tag_ids phải là một mảng!',
             'number.base': 'Các phần tử trong tag_ids phải là số nguyên!',
             'number.positive': 'Các phần tử trong tag_ids phải lớn hơn 0!'
@@ -49,12 +49,12 @@ const StoryValidation = {
         }),
         description: Joi.string().trim().allow(null, '').optional(),
         status: Joi.string().valid('ongoing', 'completed', 'dropped').optional(),
-        genre_ids: Joi.array().items(Joi.number().integer().positive()).optional().messages({
+        genre_ids: Joi.array().unique().items(Joi.number().integer().positive()).optional().messages({
             'array.base': 'genre_ids phải là một mảng!',
             'number.base': 'Các phần tử trong genre_ids phải là số nguyên!',
             'number.positive': 'Các phần tử trong genre_ids phải lớn hơn 0!'
         }),
-        tag_ids: Joi.array().items(Joi.number().integer().positive()).optional().messages({
+        tag_ids: Joi.array().unique().items(Joi.number().integer().positive()).optional().messages({
             'array.base': 'tag_ids phải là một mảng!',
             'number.base': 'Các phần tử trong tag_ids phải là số nguyên!',
             'number.positive': 'Các phần tử trong tag_ids phải lớn hơn 0!'

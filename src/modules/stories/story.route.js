@@ -8,6 +8,14 @@ const router = express.Router();
 const ChapterController = require('../chapter/chapter.controller');
 const ChapterValidation = require('../chapter/chapter.validation');
 const { uploadChapterIMG, uploadStoryCover } = require('../../middlewares/upload.middleware');
+const AppError = require('../../utils/AppError');
+
+const checkId = (req, res, next, value) => {
+    if (!/^[1-9]\d*$/.test(value)) return next(new AppError('ID truyện không hợp lệ!', 400));
+    next();
+};
+router.param('id', checkId);
+router.param('storyId', checkId);
 
 //story
 router.post(
