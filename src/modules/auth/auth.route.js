@@ -11,7 +11,8 @@ router.post('/register', uploadAvatar.single('avatar'), validate(AuthValidation.
 
 router.post('/login', loginLimiter, validate(AuthValidation.loginSchema), AuthController.loginUser);
 
-router.post('/refresh', AuthController.refreshToken);
+router.post('/google', loginLimiter, validate(AuthValidation.googleSchema), AuthController.loginGoogle);
+router.post('/refresh', loginLimiter, validate(AuthValidation.refreshSchema), AuthController.refreshToken);
 
 router.post('/logout', verifyToken, AuthController.logoutUser);
 

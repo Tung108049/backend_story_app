@@ -1,6 +1,12 @@
 const AuthService = require('./auth.service');
 
 const AuthController = {
+    loginGoogle: async (req, res, next) => {
+        try {
+            const result = await AuthService.loginGoogle(req.body.idToken);
+            res.status(200).json({ message: 'Đăng nhập Google thành công!', data: result });
+        } catch (error) { next(error); }
+    },
     registerUser: async (req, res, next) => {
         try {
             const avatarUrl = req.file ? req.file.path : null;

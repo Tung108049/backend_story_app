@@ -1,15 +1,17 @@
 const Joi = require('joi');
 const AuthValidation = {
+    googleSchema: Joi.object({ idToken: Joi.string().max(10000).required() }),
+    refreshSchema: Joi.object({ refreshToken: Joi.string().max(10000).required() }),
     registerSchema: Joi.object({
         username: Joi.string()
             .trim()
-            .pattern(/^[a-zA-Z0-9__-]+$/)
+            .pattern(/^[a-zA-Z0-9_]+$/)
             .min(3)
             .max(50)
             .required()
             .messages({
                 'string.empty': 'Tên đăng nhập không được để trống',
-                'string.pattern.base': 'Tên đăng nhập chỉ dc chứa chữ, số, -, _',
+                'string.pattern.base': 'Tên đăng nhập chỉ được chứa chữ, số và _',
                 'string.min': 'Tên đăng nhập cần chứa ít nhất 3 kí tự!',
                 'string.max': 'Tên đăng nhập quá dài!'
             }),
@@ -18,7 +20,7 @@ const AuthValidation = {
             'string.empty': 'Email không được để trống!',
             'string.email': 'Email không hợp lệ!'
         }),
-        password: Joi.string().trim().min(6).max(100).required().messages({
+        password: Joi.string().min(8).max(72).required().messages({
             'string.empty': 'Mật khẩu không được để trống!',
             'string.min': 'Mật khẩu quá ngắn!',
             'string.max': 'Mật khẩu quá dài!'
@@ -31,7 +33,7 @@ const AuthValidation = {
             'any.required': 'Vui lòng nhập Tên đăng nhập hoặc Email!'
         }),
 
-        password: Joi.string().trim().required().messages({
+        password: Joi.string().max(72).required().messages({
             'string.empty': 'Vui lòng nhập mật khẩu!',
             'any.required': 'Vui lòng nhập mật khẩu!'
         })
