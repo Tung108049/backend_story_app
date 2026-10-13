@@ -24,7 +24,9 @@ Mỗi chức năng: phân tích → thực hiện → test → xem phản hồi/
 
 - Nền API/database: đã triển khai; test API trên MySQL và schema mới/chạy lại đã qua.
 - Auth/Google: đã triển khai; email/mật khẩu và vòng đời phiên đã test.
-  Google đã test nghiệp vụ bằng mock thư viện, chờ OAuth client để thử tài khoản thật.
+  Google đã test nghiệp vụ bằng mock thư viện; Web client ID đã cấu hình,
+  backend thật từ chối token giả với 401. Chờ người dùng chọn tài khoản trên
+  máy ảo để nghiệm thu OAuth thật.
 - App/API, đọc, hồ sơ, tủ sách/lịch sử: đã triển khai; 7 test Flutter đã qua.
 - APK debug: build thành công; integration test Android/API thật đã qua
   (đọc/chuyển chương → đăng nhập → lưu truyện → lịch sử).
