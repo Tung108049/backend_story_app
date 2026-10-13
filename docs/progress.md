@@ -28,7 +28,7 @@ Mỗi chức năng: phân tích → thực hiện → test → xem phản hồi/
   Lần thử đầu dùng nhầm Android Client ID làm serverClientId. Đã đối chiếu cột Type
   trong Google Cloud và thay đúng Web application Client ID ở Flutter/backend;
   đang kiểm tra lại đăng nhập bằng tài khoản thật.
-- App/API, đọc, hồ sơ, tủ sách/lịch sử: đã triển khai; 7 test Flutter đã qua.
+- App/API, đọc, hồ sơ, tủ sách/lịch sử: đã triển khai; bổ sung test form liên kết Google.
 - APK debug: build thành công; integration test Android/API thật đã qua
   (đọc/chuyển chương → đăng nhập → lưu truyện → lịch sử).
 - Cloudinary: ping và upload avatar thật đã qua, tài khoản/ảnh test được dọn.
@@ -43,6 +43,7 @@ Mỗi chức năng: phân tích → thực hiện → test → xem phản hồi/
 - Danh sách truyện có phân trang 30 mục; tìm kiếm theo tên, chưa tìm gần đúng.
 - BXH dùng tổng lượt tải chương, chưa có BXH theo ngày/tuần.
 - Không tự liên kết Google với tài khoản local trùng email.
+  Muốn liên kết phải có cả Google token hợp lệ và mật khẩu local đúng.
 - Comic mẫu dùng ảnh minh họa có sẵn để test tải ảnh; không phải nội dung truyện hoàn chỉnh.
 - Tên hiển thị hiện là Story App; Android applicationId là com.tungpham.story_app.
   Tên Dart package/thư mục vẫn story_app_pro để giữ import hiện có.
@@ -54,6 +55,8 @@ Mỗi chức năng: phân tích → thực hiện → test → xem phản hồi/
 - Model Flutter không đọc được rating DECIMAL/URL tương đối; chuẩn hóa chuyển đổi.
 - Rx cập nhật ngay khi dựng LoginView; chuyển thao tác sang sau frame đầu.
 - Bìa rỗng gây yêu cầu tới URI không có host; dùng StoryCover và asset ngay.
+- Google email trùng tài khoản local: thêm luồng liên kết bằng mật khẩu app;
+  sửa middleware không che thông báo nghiệp vụ 409 bằng lỗi SQL chung.
 - Kotlin cache khác ổ đĩa; tắt incremental cache cho môi trường này.
 - AVD cũ thiếu dung lượng; dùng AVD test riêng 12 GB, không xóa dữ liệu AVD gốc.
 

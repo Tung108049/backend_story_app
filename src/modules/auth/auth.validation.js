@@ -1,6 +1,9 @@
 const Joi = require('joi');
 const AuthValidation = {
-    googleSchema: Joi.object({ idToken: Joi.string().max(10000).required() }),
+    googleSchema: Joi.object({
+        idToken: Joi.string().max(10000).required(),
+        password: Joi.string().max(72)
+    }),
     refreshSchema: Joi.object({ refreshToken: Joi.string().max(10000).required() }),
     registerSchema: Joi.object({
         username: Joi.string()

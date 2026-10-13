@@ -7,6 +7,7 @@ const crypto = require('crypto');
 const { OAuth2Client } = require('google-auth-library');
 const db = require('../src/config/database');
 const app = require('../server');
+const { loginLimiter } = require('../src/middlewares/limiter.middware');
 
 test('API với MySQL thật: tài khoản, truyện, chương và thư viện', async t => {
     const suffix = crypto.randomBytes(6).toString('hex');
@@ -128,6 +129,35 @@ test('API với MySQL thật: tài khoản, truyện, chương và thư viện',
                 const second = await request('/auth/google', 'POST', { idToken: 'test-valid' });
                 assert.equal(second.body.data.user.id, first.body.data.user.id);
                 assert.equal((await request('/users/me', 'GET', undefined, second.body.data.accessToken)).status, 200);
+            } finally {
+                OAuth2Client.prototype.verifyIdToken = originalVerify;
+                if (originalClient === undefined) delete process.env.GOOGLE_CLIENT_ID;
+                else process.env.GOOGLE_CLIENT_ID = originalClient;
+            }
+        });
+        await t.test('Google trùng email: cần mật khẩu trước khi liên kết, giữ nguyên user', async () => {
+            loginLimiter.resetKey('127.0.0.1');
+            const originalVerify = OAuth2Client.prototype.verifyIdToken;
+            const originalClient = process.env.GOOGLE_CLIENT_ID;
+            process.env.GOOGLE_CLIENT_ID = 'test-client';
+            try {
+                OAuth2Client.prototype.verifyIdToken = async () => ({ getPayload: () => ({
+                    sub: `linked-${suffix}`, email: `reader_${suffix}@example.test`, email_verified: true, name: 'Google reader'
+                }) });
+                const missing = await request('/auth/google', 'POST', { idToken: 'local-google' });
+                assert.equal(missing.status, 409);
+                assert.equal(missing.body.code, 'GOOGLE_LINK_REQUIRED');
+                assert.match(missing.body.message, /Nhập mật khẩu/);
+                assert.equal((await request('/auth/google', 'POST', { idToken: 'local-google', password: 'incorrect' })).status, 401);
+                const [before] = await db.execute('SELECT id FROM user_identities WHERE user_id = ?', [reader.id]);
+                assert.equal(before.length, 0);
+                const linked = await request('/auth/google', 'POST', { idToken: 'local-google', password: 'Testing123!' });
+                assert.equal(linked.status, 200);
+                assert.equal(linked.body.data.user.id, reader.id);
+                const again = await request('/auth/google', 'POST', { idToken: 'local-google' });
+                assert.equal(again.status, 200);
+                assert.equal(again.body.data.user.id, reader.id);
+                Object.assign(reader, again.body.data);
             } finally {
                 OAuth2Client.prototype.verifyIdToken = originalVerify;
                 if (originalClient === undefined) delete process.env.GOOGLE_CLIENT_ID;

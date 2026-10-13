@@ -13,7 +13,7 @@ API cá nhân dùng `Authorization: Bearer ACCESS_TOKEN`.
 | GET | /api/chapters/:id | Nội dung chữ hoặc images, tăng lượt xem |
 | POST | /api/auth/register | username, email, password |
 | POST | /api/auth/login | identifier, password |
-| POST | /api/auth/google | idToken; cần GOOGLE_CLIENT_ID |
+| POST | /api/auth/google | idToken; password tùy chọn khi liên kết tài khoản local; cần GOOGLE_CLIENT_ID |
 | POST | /api/auth/refresh | refreshToken → accessToken mới |
 | POST | /api/auth/logout | Thu hồi phiên hiện tại |
 | GET | /api/users/me | Hồ sơ tài khoản hiện tại |
@@ -25,4 +25,6 @@ API cá nhân dùng `Authorization: Bearer ACCESS_TOKEN`.
 | DELETE | /api/library/history | Xóa lịch sử của chính tài khoản |
 
 API quản lý truyện/chương, avatar và tạo thể loại/thẻ vẫn giữ trong các route hiện có.
+Nếu Google email trùng tài khoản local chưa liên kết, trả 409 và code GOOGLE_LINK_REQUIRED.
+Client giữ ID token trong bộ nhớ và gửi lại kèm mật khẩu app để xác minh liên kết.
 Chỉ admin hoặc tác giả được sửa truyện/chương; moderator không mặc định là chủ sở hữu.

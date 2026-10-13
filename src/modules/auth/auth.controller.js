@@ -3,7 +3,7 @@ const AuthService = require('./auth.service');
 const AuthController = {
     loginGoogle: async (req, res, next) => {
         try {
-            const result = await AuthService.loginGoogle(req.body.idToken);
+            const result = await AuthService.loginGoogle(req.body.idToken, req.body.password);
             res.status(200).json({ message: 'Đăng nhập Google thành công!', data: result });
         } catch (error) { next(error); }
     },

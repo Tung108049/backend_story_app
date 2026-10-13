@@ -1,6 +1,7 @@
 const db = require('../../config/database');
 const crypto = require('crypto');
 const AppError = require('../../utils/AppError');
+const bcrypt = require('bcrypt');
 
 const AuthRepository = {
     getUserById: async id => {
@@ -8,7 +9,7 @@ const AuthRepository = {
         return rows[0] || null;
     },
 
-    getOrCreateGoogleUser: async profile => {
+    getOrCreateGoogleUser: async (profile, password) => {
         const connection = await db.getConnection();
         try {
             await connection.beginTransaction();
@@ -21,19 +22,32 @@ const AuthRepository = {
                 await connection.commit();
                 return identities[0];
             }
-            const [existing] = await connection.execute('SELECT id FROM users WHERE email = ?', [profile.email]);
-            // Liên kết local cần xác minh riêng; không tự gộp theo email.
-            if (existing.length) throw new AppError('Email đã có tài khoản. Hãy đăng nhập bằng mật khẩu.', 409);
-            const username = 'google_' + crypto.createHash('sha256').update(profile.sub).digest('hex').slice(0, 24);
-            const [result] = await connection.execute(`
-                INSERT INTO users (username, email, nickname, avatar_url)
-                VALUES (?, ?, ?, ?)
-            `, [username, profile.email, (profile.name || profile.email).slice(0, 100), profile.picture || null]);
+            const [existing] = await connection.execute('SELECT * FROM users WHERE email = ? FOR UPDATE', [profile.email]);
+            let userId;
+            if (existing[0]) {
+                const user = existing[0];
+                if (user.status !== 'active' || user.deleted_at) throw new AppError('Tài khoản không còn hoạt động!', 403);
+                if (!password) throw new AppError(
+                    'Email Google đã có tài khoản trong app. Nhập mật khẩu tài khoản đó để liên kết.',
+                    409, 'GOOGLE_LINK_REQUIRED'
+                );
+                if (!user.password_hash || !await bcrypt.compare(password, user.password_hash)) {
+                    throw new AppError('Mật khẩu tài khoản trong app không đúng!', 401);
+                }
+                userId = user.id;
+            } else {
+                const username = 'google_' + crypto.createHash('sha256').update(profile.sub).digest('hex').slice(0, 24);
+                const [result] = await connection.execute(`
+                    INSERT INTO users (username, email, nickname, avatar_url)
+                    VALUES (?, ?, ?, ?)
+                `, [username, profile.email, (profile.name || profile.email).slice(0, 100), profile.picture || null]);
+                userId = result.insertId;
+            }
             await connection.execute(`
                 INSERT INTO user_identities (user_id, provider, provider_id, provider_email)
                 VALUES (?, 'google', ?, ?)
-            `, [result.insertId, profile.sub, profile.email]);
-            const [users] = await connection.execute('SELECT * FROM users WHERE id = ?', [result.insertId]);
+            `, [userId, profile.sub, profile.email]);
+            const [users] = await connection.execute('SELECT * FROM users WHERE id = ?', [userId]);
             await connection.commit();
             return users[0];
         } catch (error) {

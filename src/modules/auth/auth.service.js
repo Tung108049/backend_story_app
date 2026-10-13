@@ -44,7 +44,7 @@ const AuthService = {
         return await AuthService.createSession(user);
     },
 
-    loginGoogle: async idToken => {
+    loginGoogle: async (idToken, password) => {
         if (!process.env.GOOGLE_CLIENT_ID) {
             throw new AppError('Server chưa cấu hình đăng nhập Google.', 503);
         }
@@ -58,7 +58,7 @@ const AuthService = {
         if (!profile || !profile.sub || !profile.email || !profile.email_verified) {
             throw new AppError('Google chưa xác minh email của tài khoản này!', 401);
         }
-        const user = await AuthRepository.getOrCreateGoogleUser(profile);
+        const user = await AuthRepository.getOrCreateGoogleUser(profile, password);
         return await AuthService.createSession(user);
     },
 

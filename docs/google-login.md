@@ -47,7 +47,9 @@ bản này chỉ nghiệm thu Android. Release cần cấu hình SHA-1 của kh�
 - Chọn tài khoản thử → thấy hồ sơ đúng; đăng nhập lần hai không tạo user trùng.
 - Hủy chọn tài khoản → vẫn sử dụng app được.
 - Token không hợp lệ/audience khác bị backend từ chối.
-- Email trùng tài khoản local: báo đăng nhập bằng mật khẩu; chưa hỗ trợ liên kết tài khoản.
+- Email trùng tài khoản local: yêu cầu nhập mật khẩu của tài khoản trong app,
+  rồi mới liên kết Google với user hiện có; lần sau không cần mật khẩu này.
+  Mật khẩu sai không tạo identity; tài khoản bị khóa/xóa không được liên kết.
 - Đăng xuất và gọi API hồ sơ bằng token cũ → 401.
 
 Test tự động mock phản hồi thư viện Google để test nghiệp vụ và database.
